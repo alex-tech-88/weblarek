@@ -20,30 +20,20 @@
 ## Установка и запуск
 
 Для установки и запуска проекта необходимо выполнить команды
-
-```
 npm install
 npm run dev
-```
 
 или
 
-```
 yarn
 yarn dev
-```
 
 ## Сборка
-
-```
 npm run build
-```
 
 или
 
-```
 yarn build
-```
 
 # Интернет-магазин «Web-Larёk»
 
@@ -116,11 +106,11 @@ Presenter - презентер содержит основную логику п
 
 ```typescript
 interface IProduct {
-  id: string; // уникальный идентификатор товара
+  id: string;          // уникальный идентификатор товара
   description: string; // описание товара
-  image: string; // путь к изображению
-  title: string; // название товара
-  category: string; // категория товара
+  image: string;       // путь к изображению
+  title: string;       // название товара
+  category: string;    // категория товара
   price: number | null; // цена (null — товар бесценен и недоступен для покупки)
 }
 ```
@@ -132,9 +122,9 @@ interface IProduct {
 ```typescript
 interface IBuyer {
   payment: TPayment; // способ оплаты: 'online' или 'cash'
-  email: string; // электронная почта
-  phone: string; // номер телефона
-  address: string; // адрес доставки
+  email: string;     // электронная почта
+  phone: string;     // номер телефона
+  address: string;   // адрес доставки
 }
 ```
 
@@ -142,7 +132,7 @@ interface IBuyer {
 
 ```typescript
 // Допустимые значения способа оплаты
-type TPayment = "online" | "cash";
+type TPayment = 'online' | 'cash';
 
 // Объект ошибок валидации: ключ — поле IBuyer, значение — текст ошибки
 type FormErrors = Partial<Record<keyof IBuyer, string>>;
@@ -211,9 +201,11 @@ type FormErrors = Partial<Record<keyof IBuyer, string>>;
   "email": "Укажите email"
 }
 ```
+
 ## Слой коммуникации
 
 ### Класс LarekApi
+
 Отвечает за взаимодействие приложения с сервером «Веб-ларёк».
 Использует композицию — принимает в конструктор объект класса Api
 и вызывает его методы get и post для выполнения запросов.
@@ -234,3 +226,229 @@ type FormErrors = Partial<Record<keyof IBuyer, string>>;
 `createOrder(order: IOrder): Promise<IOrderResult>` — выполняет
 POST-запрос на эндпоинт `/order`, передаёт данные заказа
 и возвращает объект с id заказа и итоговой суммой.
+
+## Слой представления (View)
+
+Компоненты представления отвечают исключительно за отображение данных в DOM. Все компоненты наследуются от базового класса `Component` и не содержат бизнес-логики — только рендеринг и генерацию событий через `EventEmitter` при действиях пользователя.
+
+### Класс Header
+
+Отвечает за отображение шапки страницы: кнопку корзины и счётчик товаров в ней.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)` — находит кнопку корзины и счётчик внутри контейнера, вешает обработчик клика.
+
+Поля класса:  
+`_basketButton: HTMLButtonElement` — кнопка открытия корзины  
+`_counter: HTMLElement` — элемент счётчика товаров
+
+Сеттеры:  
+`set counter(value: number)` — обновляет текст счётчика
+
+Генерируемые события:  
+`basket:open` — при клике на кнопку корзины
+
+### Класс Gallery
+
+Отвечает за отображение каталога карточек на главной странице.
+
+Конструктор:  
+`constructor(container: HTMLElement)` — принимает контейнер галереи.
+
+Сеттеры:  
+`set catalog(items: HTMLElement[])` — заменяет содержимое контейнера переданным массивом DOM-элементов карточек
+
+### Класс Modal
+
+Отвечает за отображение модального окна. Управляет открытием, закрытием и подменой содержимого.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)` — находит кнопку закрытия и контейнер содержимого, вешает обработчики закрытия по клику на крестик и по клику на оверлей.
+
+Поля класса:  
+`_closeButton: HTMLButtonElement` — кнопка закрытия (крестик)  
+`_content: HTMLElement` — контейнер для сменного содержимого
+
+Сеттеры:  
+`set content(value: HTMLElement)` — заменяет содержимое модального окна
+
+Методы класса:  
+`open(): void` — добавляет класс `modal_active`, генерирует событие `modal:open`  
+`close(): void` — убирает класс `modal_active`, очищает содержимое, генерирует событие `modal:close`  
+`render(data: { content: HTMLElement }): HTMLElement` — устанавливает содержимое и открывает модальное окно
+
+Генерируемые события:  
+`modal:open` — при открытии модального окна  
+`modal:close` — при закрытии модального окна
+
+### Абстрактный класс Card\<T\>
+
+Базовый класс для всех карточек товара. Содержит общую логику отображения названия, цены, категории и изображения.
+
+Конструктор:  
+`constructor(container: HTMLElement)` — находит общие элементы карточки в DOM.
+
+Поля класса:  
+`_title: HTMLElement` — элемент названия товара  
+`_price: HTMLElement` — элемент цены товара  
+`_category: HTMLElement | null` — элемент категории (может отсутствовать)  
+`_image: HTMLImageElement | null` — элемент изображения (может отсутствовать)
+
+Сеттеры:  
+`set title(value: string)` — устанавливает название товара  
+`set price(value: number | null)` — устанавливает цену; при `null` выводит «Бесценно»  
+`set category(value: string)` — устанавливает текст категории и CSS-модификатор цвета  
+`set image(value: string)` — устанавливает изображение через `setImage`
+
+### Класс CardCatalog
+
+Карточка товара для отображения в каталоге на главной странице. Наследует `Card`.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions: { onClick: () => void })` — вешает обработчик клика на весь контейнер карточки.
+
+Генерируемые события (через actions):  
+`card:select` — при клике на карточку (инициируется в Презентере)
+
+### Класс CardPreview
+
+Карточка товара для отображения в модальном окне просмотра. Наследует `Card`. Дополнительно отображает описание и кнопку действия.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions: { onClick: () => void })` — вешает обработчик клика на кнопку действия.
+
+Поля класса:  
+`_description: HTMLElement` — элемент описания товара  
+`_button: HTMLButtonElement` — кнопка «В корзину» / «Удалить из корзины»
+
+Сеттеры:  
+`set description(value: string)` — устанавливает текст описания  
+`set inBasket(value: boolean)` — переключает текст кнопки между «В корзину» и «Удалить из корзины»  
+`set price(value: number | null)` — переопределяет родительский сеттер: при `null` блокирует кнопку и устанавливает текст «Недоступно»
+
+### Класс CardBasket
+
+Карточка товара внутри корзины. Наследует `Card`. Отображает порядковый номер и кнопку удаления.
+
+Конструктор:  
+`constructor(container: HTMLElement, actions: { onClick: () => void })` — вешает обработчик клика на кнопку удаления.
+
+Поля класса:  
+`_index: HTMLElement` — элемент порядкового номера товара  
+`_deleteButton: HTMLButtonElement` — кнопка удаления товара из корзины
+
+Сеттеры:  
+`set index(value: number)` — устанавливает порядковый номер
+
+Генерируемые события (через actions):  
+`basket:remove` — при клике на кнопку удаления (инициируется в Презентере)
+
+### Класс BasketView
+
+Отвечает за отображение модального окна корзины: список товаров, итоговая сумма и кнопка оформления.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)` — находит список, сумму и кнопку оформления, вешает обработчик на кнопку.
+
+Поля класса:  
+`_list: HTMLElement` — контейнер списка товаров  
+`_total: HTMLElement` — элемент итоговой суммы  
+`_checkoutButton: HTMLButtonElement` — кнопка «Оформить»
+
+Сеттеры:  
+`set items(value: HTMLElement[])` — заменяет список товаров; при пустом массиве показывает надпись «Корзина пуста» и блокирует кнопку оформления  
+`set total(value: number)` — обновляет текст итоговой суммы
+
+Генерируемые события:  
+`order:start` — при клике на кнопку «Оформить»
+
+### Абстрактный класс Form\<T\>
+
+Базовый класс для всех форм. Управляет состоянием кнопки submit и отображением ошибок валидации. Параметр `T` описывает поля конкретной формы.
+
+Конструктор:  
+`constructor(container: HTMLFormElement, events: IEvents)` — находит кнопку submit и контейнер ошибок. Вешает делегированный обработчик на все `input` внутри формы и обработчик отправки формы.
+
+Поля класса:  
+`_submitButton: HTMLButtonElement` — кнопка отправки формы  
+`_errors: HTMLElement` — элемент для вывода текста ошибок
+
+Сеттеры:  
+`set valid(value: boolean)` — активирует или блокирует кнопку submit  
+`set errors(value: string[])` — выводит массив ошибок через разделитель `. `
+
+Генерируемые события:  
+`${formName}:change` — при изменении любого поля ввода; передаёт `{ field: keyof T, value: string }`  
+`${formName}:submit` — при отправке формы
+
+### Класс OrderForm
+
+Форма первого шага оформления заказа: выбор способа оплаты и ввод адреса доставки. Наследует `Form<{ address: string; payment: string }>`.
+
+Конструктор:  
+`constructor(container: HTMLFormElement, events: IEvents)` — находит кнопки выбора способа оплаты, вешает обработчики кликов на каждую.
+
+Поля класса:  
+`_onlineButton: HTMLButtonElement` — кнопка оплаты картой  
+`_cashButton: HTMLButtonElement` — кнопка оплаты при получении
+
+Сеттеры:  
+`set payment(value: 'online' | 'cash')` — переключает активный CSS-класс между кнопками оплаты
+
+Генерируемые события:  
+`order:change` — при клике на кнопку оплаты; передаёт `{ field: 'payment', value: 'online' | 'cash' }`  
+`order:submit` — при отправке формы (кнопка «Далее»)
+
+### Класс ContactsForm
+
+Форма второго шага оформления заказа: ввод email и телефона. Наследует `Form<{ email: string; phone: string }>`. Не добавляет новых полей или методов поверх базового класса.
+
+Конструктор:  
+`constructor(container: HTMLFormElement, events: IEvents)` — вызывает конструктор родителя.
+
+Генерируемые события:  
+`contacts:change` — при изменении полей email или phone  
+`contacts:submit` — при отправке формы (кнопка «Оплатить»)
+
+### Класс Success
+
+Отвечает за отображение экрана успешного оформления заказа с итоговой суммой списания.
+
+Конструктор:  
+`constructor(container: HTMLElement, events: IEvents)` — находит элемент описания и кнопку закрытия, вешает обработчик на кнопку.
+
+Поля класса:  
+`_description: HTMLElement` — элемент текста с суммой списания  
+`_closeButton: HTMLButtonElement` — кнопка «За новыми покупками»
+
+Сеттеры:  
+`set total(value: number)` — устанавливает текст «Списано N синапсов»
+
+Генерируемые события:  
+`success:close` — при клике на кнопку закрытия
+
+## Презентер
+
+Презентер реализован в файле `src/main.ts`. Он не является отдельным классом — это набор подписок на события брокера `EventEmitter`, которые связывают модели и представления.
+
+### Схема взаимодействия
+Пользователь → View → событие → Presenter → Model → событие → Presenter → View
+
+### Таблица событий
+
+| Событие | Источник | Обработчик в Презентере |
+|---|---|---|
+| `catalog:changed` | Presenter (после загрузки) | Рендерит карточки в Gallery, обновляет счётчик Header |
+| `card:select` | CardCatalog (onClick) | Открывает CardPreview в Modal |
+| `basket:add` | CardPreview (onClick) | Добавляет товар в Basket, генерирует `basket:changed` |
+| `basket:remove` | CardPreview / CardBasket (onClick) | Удаляет товар из Basket, генерирует `basket:changed` |
+| `basket:changed` | Presenter | Обновляет Header и BasketView |
+| `basket:open` | Header | Открывает BasketView в Modal |
+| `order:start` | BasketView | Очищает Buyer, открывает OrderForm в Modal |
+| `order:change` | OrderForm | Обновляет поле Buyer, ре-рендерит OrderForm с ошибками |
+| `order:submit` | OrderForm | Открывает ContactsForm в Modal |
+| `contacts:change` | ContactsForm | Обновляет поле Buyer, ре-рендерит ContactsForm с ошибками |
+| `contacts:submit` | ContactsForm | Отправляет заказ через LarekApi, открывает Success |
+| `success:close` | Success | Закрывает Modal |
+| `modal:open` | Modal | Блокирует скролл страницы |
+| `modal:close` | Modal | Разблокирует скролл страницы |
