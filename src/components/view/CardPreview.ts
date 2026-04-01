@@ -28,7 +28,6 @@ export class CardPreview extends Card<TCardPreview> {
         this._button.textContent = value ? 'Удалить из корзины' : 'В корзину';
     }
 
-    // переопределяем: при null — блокируем кнопку
     set price(value: number | null) {
         super.price = value;
         if (value === null) {

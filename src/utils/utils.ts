@@ -106,6 +106,15 @@ export function isBoolean(v: unknown): v is boolean {
 }
 
 /**
+ * Форматирует цену: числа от 10 000 и выше отображаются с пробелом-разделителем разрядов
+ */
+export function formatPrice(value: number): string {
+    return value >= 10000
+        ? value.toLocaleString('ru-RU')
+        : String(value);
+}
+
+/**
  * Фабрика DOM-элементов в простейшей реализации
  * здесь не учтено много факторов
  * в интернет можно найти более полные реализации

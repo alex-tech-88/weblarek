@@ -1,6 +1,6 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
-import { ensureElement } from '../../utils/utils';
+import { ensureElement, formatPrice } from '../../utils/utils';
 
 interface ISuccess {
     total: number;
@@ -21,6 +21,6 @@ export class Success extends Component<ISuccess> {
     }
 
     set total(value: number) {
-        this._description.textContent = `Списано ${value} синапсов`;
+        this._description.textContent = `Списано ${formatPrice(value)} синапсов`;
     }
 }

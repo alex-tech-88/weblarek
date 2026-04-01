@@ -1,6 +1,7 @@
 import { Component } from '../base/Component';
 import { IProduct } from '../../types';
 import { categoryMap } from '../../utils/constants';
+import { formatPrice } from '../../utils/utils';
 
 type TCardData = Pick<IProduct, 'title' | 'price' | 'category' | 'image'>;
 
@@ -23,13 +24,14 @@ export abstract class Card<T extends Partial<TCardData>> extends Component<T> {
     }
 
     set price(value: number | null) {
-        this._price.textContent = value !== null ? `${value} синапсов` : 'Бесценно';
+        this._price.textContent = value !== null
+            ? `${formatPrice(value)} синапсов`
+            : 'Бесценно';
     }
 
     set category(value: string) {
         if (this._category) {
             this._category.textContent = value;
-            // сбросить все модификаторы категорий
             Object.values(categoryMap).forEach(cls =>
                 this._category!.classList.remove(cls)
             );

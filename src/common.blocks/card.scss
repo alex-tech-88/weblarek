@@ -44,16 +44,18 @@
   }
 
   &__image {
-    height: 390px;
-    aspect-ratio: 1;
-    margin: 3.75rem;
-    align-self: center;
-  }
+  height: 390px;
+  aspect-ratio: 1;
+  margin: 3.75rem;
+  align-self: center;
+}
+
   &__title {
     font-size: $titleFontSize;
     font-weight: 500;
     margin: 0;
     flex-grow: 1;
+    text-align: left;
   }
   &__text {
     text-align: left;
@@ -84,5 +86,8 @@
   &__action {
   }
   &__price {
-  }
+  font-size: $mainFontSize; // ← добавить явный размер
+  font-weight: 400;
+  color: $secondary;
+}
 }

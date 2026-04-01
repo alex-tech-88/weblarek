@@ -8,7 +8,7 @@ export class OrderForm extends Form<{ address: string; payment: string }> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
         this._onlineButton = container.querySelector('[name="card"]')!;
-        this._cashButton   = container.querySelector('[name="cash"]')!;
+        this._cashButton = container.querySelector('[name="cash"]')!;
 
         this._onlineButton.addEventListener('click', () => {
             this.events.emit('order:change', { field: 'payment', value: 'online' });
@@ -20,6 +20,6 @@ export class OrderForm extends Form<{ address: string; payment: string }> {
 
     set payment(value: 'online' | 'cash') {
         this._onlineButton.classList.toggle('button_alt-active', value === 'online');
-        this._cashButton.classList.toggle('button_alt-active',  value === 'cash');
+        this._cashButton.classList.toggle('button_alt-active', value === 'cash');
     }
 }
