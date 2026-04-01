@@ -27,9 +27,9 @@ const api      = new Api(API_URL);
 const larekApi = new LarekApi(api, CDN_URL);
 
 // Модели
-const productsModel = new Products();
-const basketModel   = new Basket();
-const buyerModel    = new Buyer();
+const productsModel = new Products(events);
+const basketModel   = new Basket(events);
+const buyerModel    = new Buyer(events);
 
 // Шаблоны
 const cardCatalogTemplate  = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -85,13 +85,11 @@ events.on('card:select', (item: IProduct) => {
 // Добавить товар в корзину
 events.on('basket:add', (item: IProduct) => {
     basketModel.add(item);
-    events.emit('basket:changed');
 });
 
 // Удалить товар из корзины
 events.on('basket:remove', (data: { id: string }) => {
     basketModel.remove(data.id);
-    events.emit('basket:changed');
 });
 
 // Обновить счётчик и содержимое корзины
@@ -168,7 +166,6 @@ events.on('contacts:submit', () => {
         .then(result => {
             basketModel.clear();
             buyerModel.clear();
-            events.emit('basket:changed');
             modal.render({
                 content: successView.render({ total: result.total }),
             });
@@ -185,6 +182,5 @@ events.on('success:close', () => modal.close());
 larekApi.getProducts()
     .then(items => {
         productsModel.setItems(items);
-        events.emit('catalog:changed');
     })
     .catch(err => console.error('Ошибка загрузки каталога:', err));
