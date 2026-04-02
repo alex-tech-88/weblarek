@@ -16,11 +16,6 @@ export abstract class Component<T> {
         }
     }
 
-    // Публичный доступ к корневому элементу для презентера
-    getContainer(): HTMLElement {
-        return this.container;
-    }
-
     // Вернуть корневой DOM-элемент
     render(data?: Partial<T>): HTMLElement {
         Object.assign(this as object, data ?? {});

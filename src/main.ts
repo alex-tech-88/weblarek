@@ -110,19 +110,18 @@ events.on('basket:changed', () => {
 
 // Открыть корзину — корзина уже актуальна после basket:changed
 events.on('basket:open', () => {
-    modal.render({ content: basketView.getContainer() });
+    modal.render({ content: basketView.render() });
 });
 
 
-// Начать оформление — НЕ очищаем модель
+// Начать оформление — НЕ очищаем модель, кнопка заблокирована в конструкторе
 events.on('order:start', () => {
-    modal.render({ content: orderForm.getContainer() });
-    events.emit('buyer:changed');
+    modal.render({ content: orderForm.render() });
 });
 
 
 // Изменение поля → только пишем в модель
-// buyer:changed сработает внутри setField автоматически
+// buyer:changed эмитится внутри setField автоматически
 events.on('order:change', (data: { field: keyof IBuyer; value: string }) => {
     buyerModel.setField(data.field, data.value);
 });
@@ -155,7 +154,7 @@ events.on('buyer:changed', () => {
 
 // Переход на второй шаг формы
 events.on('order:submit', () => {
-    modal.render({ content: contactsForm.getContainer() });
+    modal.render({ content: contactsForm.render() });
 });
 
 

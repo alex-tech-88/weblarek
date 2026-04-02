@@ -10,6 +10,9 @@ export class OrderForm extends Form<{ address: string; payment: string }> {
         this.onlineButton = container.querySelector('[name="card"]')!;
         this.cashButton   = container.querySelector('[name="cash"]')!;
 
+        // кнопка заблокирована при создании
+        this.submitButton.disabled = true;
+
         this.onlineButton.addEventListener('click', () => {
             this.events.emit('order:change', { field: 'payment', value: 'online' });
         });
