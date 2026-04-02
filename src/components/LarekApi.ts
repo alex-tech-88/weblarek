@@ -1,26 +1,26 @@
 import { IApi, IProduct, IOrder, IOrderResult } from '../types';
 
 export class LarekApi {
-    private _api: IApi;
-    private _cdn: string;
+    private api: IApi;
+    private cdn: string;
 
     constructor(api: IApi, cdn: string) {
-        this._api = api;
-        this._cdn = cdn;
+        this.api = api;
+        this.cdn = cdn;
     }
 
     getProducts(): Promise<IProduct[]> {
-        return this._api
+        return this.api
             .get<{ total: number; items: IProduct[] }>('/product/')
             .then(data =>
                 data.items.map(product => ({
                     ...product,
-                    image: this._cdn + product.image,
+                    image: this.cdn + product.image,
                 }))
             );
     }
 
     createOrder(order: IOrder): Promise<IOrderResult> {
-        return this._api.post<IOrderResult>('/order', order);
+        return this.api.post<IOrderResult>('/order', order);
     }
 }

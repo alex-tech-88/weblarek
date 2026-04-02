@@ -7,20 +7,20 @@ interface ISuccess {
 }
 
 export class Success extends Component<ISuccess> {
-    protected _description: HTMLElement;
-    protected _closeButton: HTMLButtonElement;
+    protected descriptionEl: HTMLElement;
+    protected closeButton: HTMLButtonElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
-        this._description = ensureElement<HTMLElement>('.order-success__description', container);
-        this._closeButton = ensureElement<HTMLButtonElement>('.order-success__close', container);
+        this.descriptionEl = ensureElement<HTMLElement>('.order-success__description', container);
+        this.closeButton   = ensureElement<HTMLButtonElement>('.order-success__close', container);
 
-        this._closeButton.addEventListener('click', () => {
+        this.closeButton.addEventListener('click', () => {
             this.events.emit('success:close');
         });
     }
 
     set total(value: number) {
-        this._description.textContent = `Списано ${formatPrice(value)} синапсов`;
+        this.descriptionEl.textContent = `Списано ${formatPrice(value)} синапсов`;
     }
 }

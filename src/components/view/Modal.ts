@@ -7,22 +7,22 @@ interface IModal {
 }
 
 export class Modal extends Component<IModal> {
-    protected _closeButton: HTMLButtonElement;
-    protected _content: HTMLElement;
+    protected closeButton: HTMLButtonElement;
+    protected contentEl: HTMLElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
-        this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
-        this._content = ensureElement<HTMLElement>('.modal__content', container);
+        this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
+        this.contentEl   = ensureElement<HTMLElement>('.modal__content', container);
 
-        this._closeButton.addEventListener('click', () => this.close());
+        this.closeButton.addEventListener('click', () => this.close());
         this.container.addEventListener('click', (e) => {
             if (e.target === this.container) this.close();
         });
     }
 
     set content(value: HTMLElement) {
-        this._content.replaceChildren(value);
+        this.contentEl.replaceChildren(value);
     }
 
     open() {
@@ -32,7 +32,7 @@ export class Modal extends Component<IModal> {
 
     close() {
         this.container.classList.remove('modal_active');
-        this._content.replaceChildren();
+        this.contentEl.replaceChildren();
         this.events.emit('modal:close');
     }
 

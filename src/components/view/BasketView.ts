@@ -8,32 +8,29 @@ interface IBasketView {
 }
 
 export class BasketView extends Component<IBasketView> {
-    protected _list: HTMLElement;
-    protected _total: HTMLElement;
-    protected _checkoutButton: HTMLButtonElement;
+    protected listEl: HTMLElement;
+    protected totalEl: HTMLElement;
+    protected checkoutButton: HTMLButtonElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
-        this._list           = ensureElement<HTMLElement>('.basket__list', container);
-        this._total          = ensureElement<HTMLElement>('.basket__price', container);
-        this._checkoutButton = ensureElement<HTMLButtonElement>('.basket__button', container);
+        this.listEl         = ensureElement<HTMLElement>('.basket__list', container);
+        this.totalEl        = ensureElement<HTMLElement>('.basket__price', container);
+        this.checkoutButton = ensureElement<HTMLButtonElement>('.basket__button', container);
 
-        this._checkoutButton.addEventListener('click', () => {
+        this.checkoutButton.disabled = true;
+
+        this.checkoutButton.addEventListener('click', () => {
             this.events.emit('order:start');
         });
     }
 
     set items(value: HTMLElement[]) {
-        if (value.length === 0) {
-            this._list.innerHTML = '<p class="basket__empty">Корзина пуста</p>';
-            this._checkoutButton.disabled = true;
-        } else {
-            this._list.replaceChildren(...value);
-            this._checkoutButton.disabled = false;
-        }
+        this.listEl.replaceChildren(...value);
+        this.checkoutButton.disabled = value.length === 0;
     }
 
     set total(value: number) {
-        this._total.textContent = `${formatPrice(value)} синапсов`;
+        this.totalEl.textContent = `${formatPrice(value)} синапсов`;
     }
 }

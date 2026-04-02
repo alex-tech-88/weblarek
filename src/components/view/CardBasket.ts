@@ -8,17 +8,17 @@ interface ICardActions {
 }
 
 export class CardBasket extends Card<TCardBasket> {
-    protected _index: HTMLElement;
-    protected _deleteButton: HTMLButtonElement;
+    protected indexEl: HTMLElement;
+    protected deleteButton: HTMLButtonElement;
 
     constructor(container: HTMLElement, actions: ICardActions) {
         super(container);
-        this._index = container.querySelector('.basket__item-index')!;
-        this._deleteButton = container.querySelector('.basket__item-delete')!;
-        this._deleteButton.addEventListener('click', actions.onClick);
+        this.indexEl      = container.querySelector('.basket__item-index')!;
+        this.deleteButton = container.querySelector('.basket__item-delete')!;
+        this.deleteButton.addEventListener('click', actions.onClick);
     }
 
     set index(value: number) {
-        this._index.textContent = String(value);
+        this.indexEl.textContent = String(value);
     }
 }

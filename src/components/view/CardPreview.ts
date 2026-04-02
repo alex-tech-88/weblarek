@@ -1,40 +1,58 @@
 import { Card } from './Card';
 import { IProduct } from '../../types';
+import { IEvents } from '../base/Events';
+import { categoryMap } from '../../utils/constants';
 
 type TCardPreview = Pick<IProduct, 'title' | 'price' | 'category' | 'image' | 'description'> & {
     inBasket: boolean;
 };
 
-interface ICardActions {
-    onClick: () => void;
-}
-
 export class CardPreview extends Card<TCardPreview> {
-    protected _description: HTMLElement;
-    protected _button: HTMLButtonElement;
+    protected categoryEl: HTMLElement;
+    protected imageEl: HTMLImageElement;
+    protected descriptionEl: HTMLElement;
+    protected button: HTMLButtonElement;
 
-    constructor(container: HTMLElement, actions: ICardActions) {
+    constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
-        this._description = container.querySelector('.card__text')!;
-        this._button = container.querySelector('.card__button')!;
-        this._button.addEventListener('click', actions.onClick);
+        this.categoryEl    = container.querySelector('.card__category')!;
+        this.imageEl       = container.querySelector('.card__image')!;
+        this.descriptionEl = container.querySelector('.card__text')!;
+        this.button        = container.querySelector('.card__button')!;
+
+        this.button.addEventListener('click', () => {
+            this.events.emit('preview:toggle');
+        });
+    }
+
+    set category(value: string) {
+        this.categoryEl.textContent = value;
+        Object.values(categoryMap).forEach(cls =>
+            this.categoryEl.classList.remove(cls)
+        );
+        const modifier = categoryMap[value as keyof typeof categoryMap];
+        if (modifier) this.categoryEl.classList.add(modifier);
+    }
+
+    set image(value: string) {
+        this.setImage(this.imageEl, value, this.titleEl?.textContent ?? '');
     }
 
     set description(value: string) {
-        this._description.textContent = value;
+        this.descriptionEl.textContent = value;
     }
 
     set inBasket(value: boolean) {
-        this._button.textContent = value ? 'Удалить из корзины' : 'В корзину';
+        this.button.textContent = value ? 'Удалить из корзины' : 'В корзину';
     }
 
     set price(value: number | null) {
         super.price = value;
         if (value === null) {
-            this._button.disabled = true;
-            this._button.textContent = 'Недоступно';
+            this.button.disabled    = true;
+            this.button.textContent = 'Недоступно';
         } else {
-            this._button.disabled = false;
+            this.button.disabled = false;
         }
     }
 }

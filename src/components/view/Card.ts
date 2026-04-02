@@ -1,48 +1,26 @@
 import { Component } from '../base/Component';
 import { IProduct } from '../../types';
-import { categoryMap } from '../../utils/constants';
 import { formatPrice } from '../../utils/utils';
 
-type TCardData = Pick<IProduct, 'title' | 'price' | 'category' | 'image'>;
+type TCardBase = Pick<IProduct, 'title' | 'price'>;
 
-export abstract class Card<T extends Partial<TCardData>> extends Component<T> {
-    protected _title: HTMLElement;
-    protected _price: HTMLElement;
-    protected _category: HTMLElement | null;
-    protected _image: HTMLImageElement | null;
+export abstract class Card<T extends Partial<TCardBase>> extends Component<T> {
+    protected titleEl: HTMLElement;
+    protected priceEl: HTMLElement;
 
     constructor(container: HTMLElement) {
         super(container);
-        this._title    = container.querySelector('.card__title')!;
-        this._price    = container.querySelector('.card__price')!;
-        this._category = container.querySelector('.card__category');
-        this._image    = container.querySelector('.card__image');
+        this.titleEl = container.querySelector('.card__title')!;
+        this.priceEl = container.querySelector('.card__price')!;
     }
 
     set title(value: string) {
-        this._title.textContent = value;
+        this.titleEl.textContent = value;
     }
 
     set price(value: number | null) {
-        this._price.textContent = value !== null
+        this.priceEl.textContent = value !== null
             ? `${formatPrice(value)} синапсов`
             : 'Бесценно';
-    }
-
-    set category(value: string) {
-        if (this._category) {
-            this._category.textContent = value;
-            Object.values(categoryMap).forEach(cls =>
-                this._category!.classList.remove(cls)
-            );
-            const modifier = categoryMap[value as keyof typeof categoryMap];
-            if (modifier) this._category.classList.add(modifier);
-        }
-    }
-
-    set image(value: string) {
-        if (this._image) {
-            this.setImage(this._image, value, this._title?.textContent ?? '');
-        }
     }
 }

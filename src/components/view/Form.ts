@@ -8,13 +8,13 @@ interface IForm {
 }
 
 export abstract class Form<T extends object> extends Component<IForm> {
-    protected _submitButton: HTMLButtonElement;
-    protected _errors: HTMLElement;
+    protected submitButton: HTMLButtonElement;
+    protected errorsEl: HTMLElement;
 
     constructor(protected container: HTMLFormElement, protected events: IEvents) {
         super(container);
-        this._submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', container);
-        this._errors = ensureElement<HTMLElement>('.form__errors', container);
+        this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', container);
+        this.errorsEl     = ensureElement<HTMLElement>('.form__errors', container);
 
         this.container.addEventListener('input', (e: Event) => {
             const target = e.target as HTMLInputElement;
@@ -33,10 +33,10 @@ export abstract class Form<T extends object> extends Component<IForm> {
     }
 
     set valid(value: boolean) {
-        this._submitButton.disabled = !value;
+        this.submitButton.disabled = !value;
     }
 
     set errors(value: string[]) {
-        this._errors.textContent = value.join('. ');
+        this.errorsEl.textContent = value.join('. ');
     }
 }

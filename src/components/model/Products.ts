@@ -2,30 +2,30 @@ import { IProduct } from '../../types';
 import { IEvents } from '../base/Events';
 
 export class Products {
-    protected _items: IProduct[] = [];
-    protected _preview: IProduct | null = null;
+    protected items: IProduct[] = [];
+    protected preview: IProduct | null = null;
 
-    constructor(protected events: IEvents) { }
+    constructor(protected events: IEvents) {}
 
     setItems(items: IProduct[]): void {
-        this._items = items;
+        this.items = items;
         this.events.emit('catalog:changed');
     }
 
     getItems(): IProduct[] {
-        return this._items;
+        return this.items;
     }
 
     getProduct(id: string): IProduct | undefined {
-        return this._items.find(item => item.id === id);
+        return this.items.find(item => item.id === id);
     }
 
-    setPreview(item: IProduct | null): void {
-        this._preview = item;
+    setPreview(item: IProduct): void {
+        this.preview = item;
         this.events.emit('preview:changed', { item });
     }
 
     getPreview(): IProduct | null {
-        return this._preview;
+        return this.preview;
     }
 }

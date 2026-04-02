@@ -2,40 +2,40 @@ import { IProduct } from '../../types';
 import { IEvents } from '../base/Events';
 
 export class Basket {
-    protected _items: IProduct[] = [];
+    protected items: IProduct[] = [];
 
-    constructor(protected events: IEvents) { }
+    constructor(protected events: IEvents) {}
 
     getItems(): IProduct[] {
-        return this._items;
+        return this.items;
     }
 
     add(item: IProduct): void {
         if (!this.hasItem(item.id)) {
-            this._items.push(item);
+            this.items.push(item);
             this.events.emit('basket:changed');
         }
     }
 
     remove(id: string): void {
-        this._items = this._items.filter(item => item.id !== id);
+        this.items = this.items.filter(item => item.id !== id);
         this.events.emit('basket:changed');
     }
 
     clear(): void {
-        this._items = [];
+        this.items = [];
         this.events.emit('basket:changed');
     }
 
     getTotal(): number {
-        return this._items.reduce((sum, item) => sum + (item.price ?? 0), 0);
+        return this.items.reduce((sum, item) => sum + (item.price ?? 0), 0);
     }
 
     getCount(): number {
-        return this._items.length;
+        return this.items.length;
     }
 
     hasItem(id: string): boolean {
-        return this._items.some(item => item.id === id);
+        return this.items.some(item => item.id === id);
     }
 }
